@@ -29,7 +29,7 @@ dependencies:
 Import the package in your dart file
 
 ```dart
-import 'package:progress_dialog/progress_dialog.dart';
+import 'package:progress_dialog/progress_dialog_null_safe.dart';
 ```
 Create and initialise a **ProgressDialog** object inside the **build()** method passing context to it
 

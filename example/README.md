@@ -2,7 +2,7 @@
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:progress_dialog/progress_dialog.dart';
+import 'package:progress_dialog/progress_dialog_null_safe.dart';
 
 ProgressDialog pr;
 
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:progress_dialog/progress_dialog.dart';
+import 'package:progress_dialog/progress_dialog_null_safe.dart';
 
 ProgressDialog pr;
 

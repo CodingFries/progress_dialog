@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:progress_dialog/progress_dialog.dart';
+import 'package:progress_dialog/progress_dialog_null_safe.dart';
 
 late ProgressDialog pr;
 
@@ -147,13 +147,12 @@ class _FirstScreenState extends State<FirstScreen> {
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
           ),
-
           onPressed: () {
             pr.show();
             Future.delayed(const Duration(seconds: 3)).then((value) {
               pr.hide().whenComplete(() {
-                Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (context) => const SecondScreen()));
+                Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (context) => const SecondScreen()));
               });
             });
           },
