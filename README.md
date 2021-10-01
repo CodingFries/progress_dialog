@@ -12,16 +12,6 @@ I added null safety and updated most of the stuff making it null safe and useabl
 
 <img src="https://raw.githubusercontent.com/fayaz07/progress_dialog/master/progress_dialog_1.png" height="35%" width="35%"  alt="Normal dialog Demo"/> <img src="https://raw.githubusercontent.com/fayaz07/progress_dialog/master/progress_dialog_2.png"   height="35%" width="35%" alt="Download dialog Demo" />
 
-
-## Installation
-[![Pub](https://img.shields.io/badge/pub-1.2.0-blue)](https://pub.dev/packages/progress_dialog)
-
-Add the Package
-```yaml
-dependencies:
-  progress_dialog: ^1.2.4
-```
-
 ## How to use
 
 
@@ -188,24 +178,4 @@ If you don't like to configure/style the dialog and continue with the default st
 | ProgressTextStyle   | No                                    |Yes                              |Yes                                   |
 | ShowLogs            | Yes                                   |No                               |No                                    |
 
----
-
-### Want to contribute?
-Pull requests and issues are always welcome!
-
-#### How to contribute?
-<ol>
-  <li> Fork the <a href="https://github.com/fayaz07/progress_dialog">repository</a></li>
-  <li> Clone it to your local machine </li>
-  <li> Open the project in your favourite editor </li>  
-  <li> Open cmd/terminal and run <b>flutter clean</b> and then <b>flutter packages get</b> </li>
-  <li> Make the changes </li>
-  <li> Create a <b>Pull Request</b> </li>
-</ol>
-
-#### View the issues [here](https://github.com/fayaz07/progress_dialog/issues)
-
-#### This library is only tested for Android, iOS contributors are most welcome
-
----
 Loading indicator -> https://loading.io/
