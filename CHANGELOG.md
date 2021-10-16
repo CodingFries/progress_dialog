@@ -13,3 +13,7 @@ Updated Readme
 ## 1.0.3
 
 Updated Changelog
+
+## 1.0.4
+
+Now you can add something above the dialog

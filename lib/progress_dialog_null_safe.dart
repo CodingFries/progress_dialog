@@ -8,6 +8,7 @@ String _dialogMessage = "Loading...";
 double _progress = 0.0, _maxProgress = 100.0;
 
 Widget? _customBody;
+Widget? widgetAboveTheDialog;
 
 TextAlign _textAlign = TextAlign.left;
 Alignment _progressWidgetAlignment = Alignment.centerLeft;
@@ -252,6 +253,7 @@ class _BodyState extends State<_Body> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              if (widgetAboveTheDialog != null) widgetAboveTheDialog!,
               // row body
               Row(
                 mainAxisSize: MainAxisSize.min,

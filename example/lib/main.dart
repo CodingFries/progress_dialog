@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:progress_dialog/progress_dialog_null_safe.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 late ProgressDialog pr;
 
