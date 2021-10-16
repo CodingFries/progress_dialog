@@ -21,3 +21,7 @@ Now you can add something above the dialog
 ## 1.0.5
 
 Fixed some changes
+
+## 1.0.6
+
+Fixed broken widget above

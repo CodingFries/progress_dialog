@@ -73,7 +73,7 @@ class ProgressDialog {
       _progress = progress ?? _progress;
     }
 
-    _widgetAboveTheDialog = _widgetAboveTheDialog;
+    _widgetAboveTheDialog = widgetAboveTheDialog;
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
     _progressWidget = progressWidget ?? _progressWidget;
@@ -256,7 +256,6 @@ class _BodyState extends State<_Body> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               if (_widgetAboveTheDialog != null) _widgetAboveTheDialog!,
-              // row body
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
