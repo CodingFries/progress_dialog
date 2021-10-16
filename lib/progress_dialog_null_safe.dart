@@ -8,7 +8,7 @@ String _dialogMessage = "Loading...";
 double _progress = 0.0, _maxProgress = 100.0;
 
 Widget? _customBody;
-Widget? widgetAboveTheDialog;
+Widget? _widgetAboveTheDialog;
 
 TextAlign _textAlign = TextAlign.left;
 Alignment _progressWidgetAlignment = Alignment.centerLeft;
@@ -54,6 +54,7 @@ class ProgressDialog {
 
   void style(
       {Widget? child,
+      Widget? widgetAboveTheDialog,
       double? progress,
       double? maxProgress,
       String? message,
@@ -72,6 +73,7 @@ class ProgressDialog {
       _progress = progress ?? _progress;
     }
 
+    _widgetAboveTheDialog = _widgetAboveTheDialog;
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
     _progressWidget = progressWidget ?? _progressWidget;
@@ -253,7 +255,7 @@ class _BodyState extends State<_Body> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              if (widgetAboveTheDialog != null) widgetAboveTheDialog!,
+              if (_widgetAboveTheDialog != null) _widgetAboveTheDialog!,
               // row body
               Row(
                 mainAxisSize: MainAxisSize.min,

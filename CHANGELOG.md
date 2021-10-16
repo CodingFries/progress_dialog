@@ -17,3 +17,7 @@ Updated Changelog
 ## 1.0.4
 
 Now you can add something above the dialog
+
+## 1.0.5
+
+Fixed some changes
