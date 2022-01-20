@@ -32,7 +32,7 @@ EdgeInsets _dialogPadding = const EdgeInsets.all(8.0);
 
 Widget _progressWidget = Image.asset(
   'assets/double_ring_loading_io.gif',
-  package: 'progress_dialog',
+  package: 'progress_dialog_null_safe',
 );
 
 class ProgressDialog {

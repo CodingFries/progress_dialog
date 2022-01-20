@@ -25,3 +25,7 @@ Fixed some changes
 ## 1.0.6
 
 Fixed broken widget above
+
+## 1.0.7
+
+Fixed Image asset package name
