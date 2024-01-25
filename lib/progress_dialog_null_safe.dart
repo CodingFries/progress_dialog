@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 enum ProgressDialogType { normal, download, }
@@ -38,13 +39,13 @@ class ProgressDialog {
   _DialogBody? _dialog;
 
   ProgressDialog(
-    BuildContext context,
-    {ProgressDialogType? type,
-    bool? isDismissible,
-    bool? showLogs,
-    TextDirection? textDirection,
-    Widget? customBody,
-  }) {
+      BuildContext context,
+      {ProgressDialogType? type,
+        bool? isDismissible,
+        bool? showLogs,
+        TextDirection? textDirection,
+        Widget? customBody,
+      }) {
     _context = context;
     _progressDialogType = type ?? ProgressDialogType.normal;
     _barrierDismissible = isDismissible ?? true;
@@ -120,11 +121,12 @@ class ProgressDialog {
     try {
       if (!_isShowing) throw ProgressDialogException(ProgressDialogExceptionType.alreadyDismissed,);
 
-      await Future.sync(() => Navigator.of(_dismissingContext, rootNavigator: true,).pop(),).then(
-        (_,) => (_showLogs) ? debugPrint('ProgressDialog dismissed') : null,
-      );
+      scheduleMicrotask(() {
+        Navigator.of(_dismissingContext, rootNavigator: true,).pop();
+        _isShowing = false;
+      });
+      if(_showLogs) debugPrint('ProgressDialog dismissed');
 
-      _isShowing = false;
       return Future.value(_isShowing,);
     } on ProgressDialogException catch (err) {
       debugPrint(err.type.message,);
@@ -145,8 +147,8 @@ class ProgressDialog {
 
       ///show the dialog
       _dialog = _DialogBody(key: dialogBodyKey,);
-      Future.sync(
-        () => showDialog<dynamic>(
+      scheduleMicrotask(() {
+        showDialog<dynamic>(
           context: _context,
           barrierDismissible: _barrierDismissible,
           builder: (BuildContext buildContext,) {
@@ -163,16 +165,11 @@ class ProgressDialog {
               ),
             );
           },
-        ),
-      );
+        );
+        _isShowing = true;
+      });
+      if(_showLogs) debugPrint('ProgressDialog dismissed');
 
-      ///Delaying the function for 250 milliseconds
-      await Future.delayed(
-        const Duration(milliseconds: 250,),
-        () => (_showLogs) ? debugPrint('ProgressDialog shown') : null,
-      );
-
-      _isShowing = true;
       return Future.value(_isShowing,);
     } on ProgressDialogException catch (err) {
       debugPrint(err.type.message,);
@@ -297,9 +294,9 @@ extension ProgressDialogExceptionTypeExtension on ProgressDialogExceptionType {
   String get message {
     switch (this) {
       case ProgressDialogExceptionType.alreadyShown:
-      return "ProgressDialog already shown";
+        return "ProgressDialog already shown";
       case ProgressDialogExceptionType.alreadyDismissed:
-      return "ProgressDialog already dismissed";
+        return "ProgressDialog already dismissed";
     }
   }
 }
