@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
 
     pr.style(
 //      message: 'Downloading file...',
-      widgetAboveTheDialog: Text('meow'),
+      widgetAboveTheDialog: const Text('meow'),
       message:
           'Lets dump some huge text into the progress dialog and check whether it can handle the huge text. If it works then not you or me, flutter is awesome',
       borderRadius: 10.0,

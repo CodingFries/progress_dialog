@@ -1,7 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-enum ProgressDialogType { normal, download, }
+enum ProgressDialogType { normal, download }
 
 String _dialogMessage = "Loading...";
 double _progress = 0.0, _maxProgress = 96.0;
@@ -20,32 +21,40 @@ ProgressDialogType? _progressDialogType;
 bool _barrierDismissible = true, _showLogs = false;
 
 TextStyle _progressTextStyle = const TextStyle(
-  color: Colors.black, fontSize: 12.0, fontWeight: FontWeight.w400,
+  color: Colors.black,
+  fontSize: 12.0,
+  fontWeight: FontWeight.w400,
 );
 TextStyle _messageStyle = const TextStyle(
-  color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.w600,
+  color: Colors.black,
+  fontSize: 18.0,
+  fontWeight: FontWeight.w600,
 );
 
 double _dialogElevation = 8.0, _borderRadius = 8.0;
 Color _backgroundColor = Colors.white;
 Curve _insetAnimCurve = Curves.easeInOut;
-EdgeInsets _dialogPadding = const EdgeInsets.all(8.0,);
+EdgeInsets _dialogPadding = const EdgeInsets.all(8.0);
 
 String assetPath = 'assets/double_ring_loading_io.gif';
-Widget _progressWidget = Image.asset(assetPath, package: 'progress_dialog_null_safe',);
+Widget _progressWidget = Image.asset(
+  assetPath,
+  package: 'progress_dialog_null_safe',
+);
 
 final GlobalKey<_DialogBodyState> dialogBodyKey = GlobalKey<_DialogBodyState>();
+
 class ProgressDialog {
   _DialogBody? _dialog;
 
   ProgressDialog(
-      BuildContext context,
-      {ProgressDialogType? type,
-        bool? isDismissible,
-        bool? showLogs,
-        TextDirection? textDirection,
-        Widget? customBody,
-      }) {
+    BuildContext context, {
+    ProgressDialogType? type,
+    bool? isDismissible,
+    bool? showLogs,
+    TextDirection? textDirection,
+    Widget? customBody,
+  }) {
     _context = context;
     _progressDialogType = type ?? ProgressDialogType.normal;
     _barrierDismissible = isDismissible ?? true;
@@ -88,7 +97,8 @@ class ProgressDialog {
     _textAlign = textAlign ?? _textAlign;
     _progressWidget = child ?? _progressWidget;
     _dialogPadding = padding ?? _dialogPadding;
-    _progressWidgetAlignment = progressWidgetAlignment ?? _progressWidgetAlignment;
+    _progressWidgetAlignment =
+        progressWidgetAlignment ?? _progressWidgetAlignment;
   }
 
   void update({
@@ -108,88 +118,108 @@ class ProgressDialog {
     _messageStyle = messageTextStyle ?? _messageStyle;
     _progressTextStyle = progressTextStyle ?? _progressTextStyle;
 
-    if(!_isShowing) {
+    if (!_isShowing) {
       return;
     } else {
-      _dialog!.update();
+      _dialog?.update();
     }
   }
 
   bool isShowing() => _isShowing;
 
-  Future<bool> hide() async{
+  Future<bool> hide() async {
     try {
-      if (!_isShowing) throw ProgressDialogException(ProgressDialogExceptionType.alreadyDismissed,);
+      if (!_isShowing) {
+        throw ProgressDialogException(
+          ProgressDialogExceptionType.alreadyDismissed,
+        );
+      }
 
       scheduleMicrotask(() {
-        Navigator.of(_dismissingContext, rootNavigator: true,).pop();
+        Navigator.of(
+          _dismissingContext,
+          rootNavigator: true,
+        ).pop();
         _isShowing = false;
       });
-      if(_showLogs) debugPrint('ProgressDialog dismissed');
+      if (_showLogs) debugPrint('ProgressDialog dismissed');
 
-      return Future.value(_isShowing,);
+      return Future.value(_isShowing);
     } on ProgressDialogException catch (err) {
-      debugPrint(err.type.message,);
-      debugPrint(err.toString(),);
-      return Future.value(false,);
+      debugPrint(err.type.message);
+      debugPrint(err.toString());
+      return Future.value(false);
     } catch (err) {
       _isShowing = false;
       debugPrint('Seems there is an issue hiding dialog');
-      debugPrint(err.toString(),);
-      return Future.value(false,);
+      debugPrint(err.toString());
+      return Future.value(false);
     }
   }
 
-  Future<bool> show() async{
+  Future<bool> show() async {
     try {
       /// If the dialog is already shown, do nothing
-      if (_isShowing) throw ProgressDialogException(ProgressDialogExceptionType.alreadyShown,);
+      if (_isShowing) {
+        throw ProgressDialogException(ProgressDialogExceptionType.alreadyShown);
+      }
 
       ///show the dialog
-      _dialog = _DialogBody(key: dialogBodyKey,);
+      _dialog = _DialogBody(key: dialogBodyKey);
       scheduleMicrotask(() {
         showDialog<dynamic>(
           context: _context,
           barrierDismissible: _barrierDismissible,
-          builder: (BuildContext buildContext,) {
+          builder: (
+            BuildContext buildContext,
+          ) {
             _dismissingContext = buildContext;
-            return WillPopScope(
-              onWillPop: () => Future.value(_barrierDismissible,),
+            return PopScope(
+              canPop: _barrierDismissible,
               child: Dialog(
                 backgroundColor: _backgroundColor,
                 insetAnimationCurve: _insetAnimCurve,
-                insetAnimationDuration: const Duration(milliseconds: 100,),
+                insetAnimationDuration: const Duration(
+                  milliseconds: 100,
+                ),
                 elevation: _dialogElevation,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(_borderRadius,),),),
-                child: Builder(builder: (_,) => _dialog!,),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(_borderRadius),
+                  ),
+                ),
+                child: Builder(builder: (_) => _dialog!),
               ),
             );
           },
         );
         _isShowing = true;
       });
-      if(_showLogs) debugPrint('ProgressDialog dismissed');
+      if (_showLogs) debugPrint('ProgressDialog dismissed');
 
-      return Future.value(_isShowing,);
+      return Future.value(_isShowing);
     } on ProgressDialogException catch (err) {
-      debugPrint(err.type.message,);
-      debugPrint(err.toString(),);
-      return Future.value(false,);
+      debugPrint(err.type.message);
+      debugPrint(err.toString());
+      return Future.value(false);
     } catch (err) {
       _isShowing = false;
-      debugPrint('Exception while showing the dialog',);
-      debugPrint(err.toString(),);
-      return Future.value(false,);
+      debugPrint(
+        'Exception while showing the dialog',
+      );
+      debugPrint(err.toString());
+      return Future.value(false);
     }
   }
 }
 
 class _DialogBody extends StatefulWidget {
-  const _DialogBody({Key? key,}) : super(key: key,);
+  const _DialogBody({Key? key}) : super(key: key);
 
-  void update() => dialogBodyKey.currentState!.update();
+  void update() => dialogBodyKey.currentState?.update();
 
-  @override State<StatefulWidget> createState() => _DialogBodyState();
+  @override
+  State<StatefulWidget> createState() => _DialogBodyState();
 }
 
 class _DialogBodyState extends State<_DialogBody> {
@@ -197,13 +227,17 @@ class _DialogBodyState extends State<_DialogBody> {
     setState(() {});
   }
 
-  @override void dispose() {
+  @override
+  void dispose() {
     _isShowing = false;
     if (_showLogs) debugPrint('ProgressDialog dismissed by back button');
     super.dispose();
   }
 
-  @override Widget build(BuildContext context,) {
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     final loader = Align(
       alignment: _progressWidgetAlignment,
       child: SizedBox(
@@ -213,8 +247,8 @@ class _DialogBodyState extends State<_DialogBody> {
       ),
     );
     final text = Builder(
-      builder: (BuildContext buildContext,) {
-        if(_progressDialogType == ProgressDialogType.normal) {
+      builder: (BuildContext buildContext) {
+        if (_progressDialogType == ProgressDialogType.normal) {
           return Text(
             _dialogMessage,
             textAlign: _textAlign,
@@ -223,11 +257,11 @@ class _DialogBodyState extends State<_DialogBody> {
           );
         } else {
           return Padding(
-            padding: const EdgeInsets.all(8.0,),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const SizedBox(height: 8.0,),
+                const SizedBox(height: 8.0),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -239,7 +273,7 @@ class _DialogBodyState extends State<_DialogBody> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4.0,),
+                const SizedBox(height: 4.0),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
@@ -255,7 +289,7 @@ class _DialogBodyState extends State<_DialogBody> {
       },
     );
 
-    if(_customBody != null) {
+    if (_customBody != null) {
       return Directionality(
         textDirection: _direction,
         child: _customBody!,
@@ -274,11 +308,11 @@ class _DialogBodyState extends State<_DialogBody> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const SizedBox(width: 8.0,),
+                  const SizedBox(width: 8.0),
                   loader,
-                  const SizedBox(width: 8.0,),
-                  Expanded(child: text,),
-                  const SizedBox(width: 8.0,)
+                  const SizedBox(width: 8.0),
+                  Expanded(child: text),
+                  const SizedBox(width: 8.0)
                 ],
               ),
             ],
@@ -289,7 +323,11 @@ class _DialogBodyState extends State<_DialogBody> {
   }
 }
 
-enum ProgressDialogExceptionType { alreadyShown, alreadyDismissed,}
+enum ProgressDialogExceptionType {
+  alreadyShown,
+  alreadyDismissed,
+}
+
 extension ProgressDialogExceptionTypeExtension on ProgressDialogExceptionType {
   String get message {
     switch (this) {
@@ -300,11 +338,16 @@ extension ProgressDialogExceptionTypeExtension on ProgressDialogExceptionType {
     }
   }
 }
+
 class ProgressDialogException implements Exception {
   ProgressDialogExceptionType type;
   String? message;
-  ProgressDialogException(this.type, [this.message,]);
-  @override String toString() {
+  ProgressDialogException(
+    this.type, [
+    this.message,
+  ]);
+  @override
+  String toString() {
     if (message == null) return "DialogException";
     return "DialogException: $message";
   }
