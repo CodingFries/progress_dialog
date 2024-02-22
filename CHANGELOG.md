@@ -1,3 +1,7 @@
+## 3.0.0
+* Updated Dependencies and SDK Constraints
+* Updated example project
+
 ## 2.0.0
 * Updated Dependencies and bug fixes
 

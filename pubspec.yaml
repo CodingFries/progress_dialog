@@ -1,6 +1,6 @@
 name: progress_dialog_null_safe
 description: Reviving an old progress dialog
-version: 2.0.0
+version: 3.0.0
 homepage: https://github.com/CodingFries/progress_dialog
 
 environment:
