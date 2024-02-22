@@ -214,7 +214,7 @@ class ProgressDialog {
 }
 
 class _DialogBody extends StatefulWidget {
-  const _DialogBody({Key? key}) : super(key: key);
+  const _DialogBody({super.key});
 
   void update() => dialogBodyKey.currentState?.update();
 
