@@ -1,3 +1,8 @@
+## 3.1.0
+* Updated Dependencies and SDK Constraints
+* Merge [PR#6](https://github.com/CodingFries/progress_dialog/pull/6) by [Tiwari Ramakant](https://github.com/tech-ramakant)
+* Add documentation for widgets
+
 ## 3.0.0
 * Updated Dependencies and SDK Constraints
 * Updated example project
