@@ -1,10 +1,10 @@
 name: progress_dialog_null_safe
 description: A lightweight, null-safe Flutter package for showing customizable progress dialogs with support for dynamic content updates and various styling options.
-version: 3.0.0
+version: 3.1.0
 homepage: https://github.com/CodingFries/progress_dialog
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ^3.8.1
   flutter: ">=1.17.0"
 
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   assets:
