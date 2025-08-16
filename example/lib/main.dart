@@ -11,7 +11,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -59,12 +59,8 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-            child: const Text(
-              'Show Dialog',
-              style: TextStyle(color: Colors.white),
-            ),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.blue),
+              backgroundColor: WidgetStateProperty.all(Colors.blue),
             ),
             onPressed: () async {
               await pr.show();
@@ -119,17 +115,21 @@ class _MyAppState extends State<MyApp> {
                 }
                 print("PR status  ${pr.isShowing()}");
               });
-            }),
+            },
+            child: const Text(
+              'Show Dialog',
+              style: TextStyle(color: Colors.white),
+            )),
       ),
     );
   }
 }
 
 class FirstScreen extends StatefulWidget {
-  const FirstScreen({Key? key}) : super(key: key);
+  const FirstScreen({super.key});
 
   @override
-  _FirstScreenState createState() => _FirstScreenState();
+  State<FirstScreen> createState() => _FirstScreenState();
 }
 
 class _FirstScreenState extends State<FirstScreen> {
@@ -143,10 +143,8 @@ class _FirstScreenState extends State<FirstScreen> {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          child: const Text('Show dialog and go to next screen',
-              style: TextStyle(color: Colors.white)),
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.blueAccent),
+            backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
           ),
           onPressed: () {
             pr.show();
@@ -157,6 +155,8 @@ class _FirstScreenState extends State<FirstScreen> {
               });
             });
           },
+          child: const Text('Show dialog and go to next screen',
+              style: TextStyle(color: Colors.white)),
         ),
       ),
     );
@@ -164,10 +164,10 @@ class _FirstScreenState extends State<FirstScreen> {
 }
 
 class SecondScreen extends StatefulWidget {
-  const SecondScreen({Key? key}) : super(key: key);
+  const SecondScreen({super.key});
 
   @override
-  _SecondScreenState createState() => _SecondScreenState();
+  State<SecondScreen> createState() => _SecondScreenState();
 }
 
 class _SecondScreenState extends State<SecondScreen> {
