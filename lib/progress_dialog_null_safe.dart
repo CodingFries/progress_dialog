@@ -135,13 +135,15 @@ class ProgressDialog {
         );
       }
 
-      scheduleMicrotask(() {
+// removed scheduleMicrotask because it could lead to issues if the context becomes unmounted before the microtask executes.
+// used _dismissingContext.mounted, which ensures that the context is valid at the moment of execution, preventing runtime errors.
+      if (_dismissingContext.mounted) {
         Navigator.of(
           _dismissingContext,
           rootNavigator: true,
         ).pop();
         _isShowing = false;
-      });
+      }
       if (_showLogs) debugPrint('ProgressDialog dismissed');
 
       return Future.value(_isShowing);
