@@ -2,85 +2,51 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-/// Enum defining the types of progress dialogs available.
 enum ProgressDialogType { normal, download }
 
-/// A customizable progress dialog widget for Flutter applications.
-///
-/// This class provides a way to show progress dialogs with various styling options
-/// and supports both normal loading and download progress display modes.
-///
-/// Example usage:
-/// ```dart
-/// final pr = ProgressDialog(context);
-/// pr.style(message: 'Loading...');
-/// await pr.show();
-/// // ... do some work ...
-/// await pr.hide();
-/// ```
+String _dialogMessage = "Loading...";
+double _progress = 0.0, _maxProgress = 96.0;
+
+Widget? _customBody;
+Widget? _widgetAboveTheDialog;
+
+TextAlign _textAlign = TextAlign.start;
+Alignment _progressWidgetAlignment = Alignment.centerLeft;
+
+TextDirection _direction = TextDirection.ltr;
+
+bool _isShowing = false;
+late BuildContext _context, _dismissingContext;
+ProgressDialogType? _progressDialogType;
+bool _barrierDismissible = true, _showLogs = false;
+
+TextStyle _progressTextStyle = const TextStyle(
+  color: Colors.black,
+  fontSize: 12.0,
+  fontWeight: FontWeight.w400,
+);
+TextStyle _messageStyle = const TextStyle(
+  color: Colors.black,
+  fontSize: 18.0,
+  fontWeight: FontWeight.w600,
+);
+
+double _dialogElevation = 8.0, _borderRadius = 8.0;
+Color _backgroundColor = Colors.white;
+Curve _insetAnimCurve = Curves.easeInOut;
+EdgeInsets _dialogPadding = const EdgeInsets.all(8.0);
+
+String assetPath = 'assets/double_ring_loading_io.gif';
+Widget _progressWidget = Image.asset(
+  assetPath,
+  package: 'progress_dialog_null_safe',
+);
+
+final GlobalKey<_DialogBodyState> dialogBodyKey = GlobalKey<_DialogBodyState>();
+
 class ProgressDialog {
-  // Constants for default values
-  static const double _defaultProgress = 0.0;
-  static const double _defaultMaxProgress = 96.0;
-  static const double _defaultElevation = 8.0;
-  static const double _defaultBorderRadius = 8.0;
-  static const double _defaultProgressWidgetSize = 64.0;
-  static const String _defaultMessage = "Loading...";
-  static const String _defaultAssetPath = 'assets/double_ring_loading_io.gif';
-
-  // Default text styles
-  static const TextStyle _defaultProgressTextStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 12.0,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const TextStyle _defaultMessageStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 18.0,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const EdgeInsets _defaultPadding = EdgeInsets.all(8.0);
-
-  // Instance variables
   _DialogBody? _dialog;
-  late BuildContext _context;
-  late BuildContext _dismissingContext;
 
-  // Configuration variables
-  String _dialogMessage = _defaultMessage;
-  double _progress = _defaultProgress;
-  double _maxProgress = _defaultMaxProgress;
-  Widget? _customBody;
-  Widget? _widgetAboveTheDialog;
-  TextAlign _textAlign = TextAlign.start;
-  Alignment _progressWidgetAlignment = Alignment.centerLeft;
-  TextDirection _direction = TextDirection.ltr;
-  bool _isShowing = false;
-  ProgressDialogType _progressDialogType = ProgressDialogType.normal;
-  bool _barrierDismissible = true;
-  bool _showLogs = false;
-  TextStyle _progressTextStyle = _defaultProgressTextStyle;
-  TextStyle _messageStyle = _defaultMessageStyle;
-  double _dialogElevation = _defaultElevation;
-  double _borderRadius = _defaultBorderRadius;
-  Color _backgroundColor = Colors.white;
-  Curve _insetAnimCurve = Curves.easeInOut;
-  EdgeInsets _dialogPadding = _defaultPadding;
-  late Widget _progressWidget;
-
-  final GlobalKey<_DialogBodyState> _dialogBodyKey =
-      GlobalKey<_DialogBodyState>();
-
-  /// Creates a new ProgressDialog instance.
-  ///
-  /// [context] - The BuildContext where the dialog will be shown
-  /// [type] - The type of progress dialog (normal or download)
-  /// [isDismissible] - Whether the dialog can be dismissed by tapping outside
-  /// [showLogs] - Whether to show debug logs
-  /// [textDirection] - The text direction for the dialog content
-  /// [customBody] - A custom widget to use as the dialog body
   ProgressDialog(
     BuildContext context, {
     ProgressDialogType? type,
@@ -95,20 +61,8 @@ class ProgressDialog {
     _showLogs = showLogs ?? false;
     _direction = textDirection ?? TextDirection.ltr;
     _customBody = customBody;
-
-    // Initialize the default progress widget
-    _progressWidget = Image.asset(
-      _defaultAssetPath,
-      package: 'progress_dialog_null_safe',
-    );
   }
 
-  /// Configures the styling and appearance of the progress dialog.
-  ///
-  /// This method allows you to customize various aspects of the dialog's appearance.
-  /// All parameters are optional and will use existing values if not provided.
-  ///
-  /// Note: This method has no effect if the dialog is already showing.
   void style({
     Widget? child,
     Widget? widgetAboveTheDialog,
@@ -127,15 +81,13 @@ class ProgressDialog {
     Alignment? progressWidgetAlignment,
   }) {
     if (_isShowing) return;
-
     if (_progressDialogType == ProgressDialogType.download) {
       _progress = progress ?? _progress;
     }
-
     _widgetAboveTheDialog = widgetAboveTheDialog;
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
-    _progressWidget = progressWidget ?? child ?? _progressWidget;
+    _progressWidget = progressWidget ?? _progressWidget;
     _backgroundColor = backgroundColor ?? _backgroundColor;
     _messageStyle = messageTextStyle ?? _messageStyle;
     _progressTextStyle = progressTextStyle ?? _progressTextStyle;
@@ -143,17 +95,12 @@ class ProgressDialog {
     _borderRadius = borderRadius ?? _borderRadius;
     _insetAnimCurve = insetAnimCurve ?? _insetAnimCurve;
     _textAlign = textAlign ?? _textAlign;
+    _progressWidget = child ?? _progressWidget;
     _dialogPadding = padding ?? _dialogPadding;
     _progressWidgetAlignment =
         progressWidgetAlignment ?? _progressWidgetAlignment;
   }
 
-  /// Updates the content of the progress dialog while it's showing.
-  ///
-  /// This method allows you to dynamically update the dialog's content
-  /// without hiding and showing it again.
-  ///
-  /// All parameters are optional and will use existing values if not provided.
   void update({
     double? progress,
     double? maxProgress,
@@ -165,27 +112,21 @@ class ProgressDialog {
     if (_progressDialogType == ProgressDialogType.download) {
       _progress = progress ?? _progress;
     }
-
     _dialogMessage = message ?? _dialogMessage;
     _maxProgress = maxProgress ?? _maxProgress;
     _progressWidget = progressWidget ?? _progressWidget;
     _messageStyle = messageTextStyle ?? _messageStyle;
     _progressTextStyle = progressTextStyle ?? _progressTextStyle;
 
-    if (_isShowing) {
+    if (!_isShowing) {
+      return;
+    } else {
       _dialog?.update();
     }
   }
 
-  /// Returns whether the progress dialog is currently showing.
   bool isShowing() => _isShowing;
 
-  /// Hides the progress dialog.
-  ///
-  /// Returns a Future<bool> that completes with true if the dialog was
-  /// successfully hidden, false otherwise.
-  ///
-  /// Throws [ProgressDialogException] if the dialog is already dismissed.
   Future<bool> hide() async {
     try {
       if (!_isShowing) {
@@ -201,9 +142,9 @@ class ProgressDialog {
         ).pop();
         _isShowing = false;
       });
-
       if (_showLogs) debugPrint('ProgressDialog dismissed');
-      return Future.value(!_isShowing);
+
+      return Future.value(_isShowing);
     } on ProgressDialogException catch (err) {
       debugPrint(err.type.message);
       debugPrint(err.toString());
@@ -216,33 +157,31 @@ class ProgressDialog {
     }
   }
 
-  /// Shows the progress dialog.
-  ///
-  /// Returns a Future<bool> that completes with true if the dialog was
-  /// successfully shown, false otherwise.
-  ///
-  /// Throws [ProgressDialogException] if the dialog is already shown.
   Future<bool> show() async {
     try {
-      // If the dialog is already shown, do nothing
+      /// If the dialog is already shown, do nothing
       if (_isShowing) {
         throw ProgressDialogException(ProgressDialogExceptionType.alreadyShown);
       }
 
-      // Show the dialog
-      _dialog = _DialogBody(key: _dialogBodyKey, progressDialog: this);
+      ///show the dialog
+      _dialog = _DialogBody(key: dialogBodyKey);
       scheduleMicrotask(() {
         showDialog<dynamic>(
           context: _context,
           barrierDismissible: _barrierDismissible,
-          builder: (BuildContext buildContext) {
+          builder: (
+            BuildContext buildContext,
+          ) {
             _dismissingContext = buildContext;
             return PopScope(
               canPop: _barrierDismissible,
               child: Dialog(
                 backgroundColor: _backgroundColor,
                 insetAnimationCurve: _insetAnimCurve,
-                insetAnimationDuration: const Duration(milliseconds: 100),
+                insetAnimationDuration: const Duration(
+                  milliseconds: 100,
+                ),
                 elevation: _dialogElevation,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
@@ -256,8 +195,8 @@ class ProgressDialog {
         );
         _isShowing = true;
       });
+      if (_showLogs) debugPrint('ProgressDialog dismissed');
 
-      if (_showLogs) debugPrint('ProgressDialog shown');
       return Future.value(_isShowing);
     } on ProgressDialogException catch (err) {
       debugPrint(err.type.message);
@@ -265,70 +204,56 @@ class ProgressDialog {
       return Future.value(false);
     } catch (err) {
       _isShowing = false;
-      debugPrint('Exception while showing the dialog');
+      debugPrint(
+        'Exception while showing the dialog',
+      );
       debugPrint(err.toString());
       return Future.value(false);
     }
   }
 }
 
-/// Internal widget class for rendering the dialog body.
-///
-/// This class is used internally by [ProgressDialog] and should not be
-/// instantiated directly.
 class _DialogBody extends StatefulWidget {
-  final ProgressDialog progressDialog;
+  const _DialogBody({super.key});
 
-  const _DialogBody({
-    super.key,
-    required this.progressDialog,
-  });
-
-  /// Updates the dialog content by calling setState on the current state.
-  void update() =>
-      (key as GlobalKey<_DialogBodyState>?)?.currentState?.update();
+  void update() => dialogBodyKey.currentState?.update();
 
   @override
   State<StatefulWidget> createState() => _DialogBodyState();
 }
 
-/// State class for [_DialogBody].
 class _DialogBodyState extends State<_DialogBody> {
-  /// Updates the dialog by calling setState.
-  void update() {
+  update() {
     setState(() {});
   }
 
   @override
   void dispose() {
-    widget.progressDialog._isShowing = false;
-    if (widget.progressDialog._showLogs) {
-      debugPrint('ProgressDialog dismissed by back button');
-    }
+    _isShowing = false;
+    if (_showLogs) debugPrint('ProgressDialog dismissed by back button');
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final pd = widget.progressDialog;
-
+  Widget build(
+    BuildContext context,
+  ) {
     final loader = Align(
-      alignment: pd._progressWidgetAlignment,
+      alignment: _progressWidgetAlignment,
       child: SizedBox(
-        width: ProgressDialog._defaultProgressWidgetSize,
-        height: ProgressDialog._defaultProgressWidgetSize,
-        child: pd._progressWidget,
+        width: 64.0,
+        height: 64.0,
+        child: _progressWidget,
       ),
     );
-
     final text = Builder(
       builder: (BuildContext buildContext) {
-        if (pd._progressDialogType == ProgressDialogType.normal) {
+        if (_progressDialogType == ProgressDialogType.normal) {
           return Text(
-            pd._dialogMessage,
-            textAlign: pd._textAlign,
-            style: pd._messageStyle,
-            textDirection: pd._direction,
+            _dialogMessage,
+            textAlign: _textAlign,
+            style: _messageStyle,
+            textDirection: _direction,
           );
         } else {
           return Padding(
@@ -341,9 +266,9 @@ class _DialogBodyState extends State<_DialogBody> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        pd._dialogMessage,
-                        style: pd._messageStyle,
-                        textDirection: pd._direction,
+                        _dialogMessage,
+                        style: _messageStyle,
+                        textDirection: _direction,
                       ),
                     ),
                   ],
@@ -352,9 +277,9 @@ class _DialogBodyState extends State<_DialogBody> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
-                    "${pd._progress}/${pd._maxProgress}",
-                    style: pd._progressTextStyle,
-                    textDirection: pd._direction,
+                    "$_progress/$_maxProgress",
+                    style: _progressTextStyle,
+                    textDirection: _direction,
                   ),
                 ),
               ],
@@ -364,22 +289,22 @@ class _DialogBodyState extends State<_DialogBody> {
       },
     );
 
-    if (pd._customBody != null) {
+    if (_customBody != null) {
       return Directionality(
-        textDirection: pd._direction,
-        child: pd._customBody!,
+        textDirection: _direction,
+        child: _customBody!,
       );
     } else {
       return Directionality(
-        textDirection: pd._direction,
+        textDirection: _direction,
         child: Container(
-          padding: pd._dialogPadding,
+          padding: _dialogPadding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              if (pd._widgetAboveTheDialog != null) pd._widgetAboveTheDialog!,
+              if (_widgetAboveTheDialog != null) _widgetAboveTheDialog!,
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -398,13 +323,11 @@ class _DialogBodyState extends State<_DialogBody> {
   }
 }
 
-/// Enum defining the types of exceptions that can occur with ProgressDialog.
 enum ProgressDialogExceptionType {
   alreadyShown,
   alreadyDismissed,
 }
 
-/// Extension providing user-friendly messages for [ProgressDialogExceptionType].
 extension ProgressDialogExceptionTypeExtension on ProgressDialogExceptionType {
   String get message {
     switch (this) {
@@ -416,23 +339,13 @@ extension ProgressDialogExceptionTypeExtension on ProgressDialogExceptionType {
   }
 }
 
-/// Custom exception class for ProgressDialog-specific errors.
-///
-/// This exception is thrown when operations are performed on the dialog
-/// in inappropriate states (e.g., trying to show an already shown dialog).
 class ProgressDialogException implements Exception {
-  /// The type of exception that occurred.
-  final ProgressDialogExceptionType type;
-
-  /// Optional custom message for the exception.
-  final String? message;
-
-  /// Creates a new ProgressDialogException.
-  ///
-  /// [type] - The type of exception
-  /// [message] - Optional custom message
-  ProgressDialogException(this.type, [this.message]);
-
+  ProgressDialogExceptionType type;
+  String? message;
+  ProgressDialogException(
+    this.type, [
+    this.message,
+  ]);
   @override
   String toString() {
     if (message == null) return "DialogException";
