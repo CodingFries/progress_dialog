@@ -194,13 +194,15 @@ class ProgressDialog {
         );
       }
 
-      scheduleMicrotask(() {
+      // removed scheduleMicrotask because it could lead to issues if the context becomes unmounted before the microtask executes.
+      // used _dismissingContext.mounted, which ensures that the context is valid at the moment of execution, preventing runtime errors.
+      if (_dismissingContext.mounted) {
         Navigator.of(
           _dismissingContext,
           rootNavigator: true,
         ).pop();
         _isShowing = false;
-      });
+      }
 
       if (_showLogs) debugPrint('ProgressDialog dismissed');
       return Future.value(!_isShowing);
@@ -229,33 +231,38 @@ class ProgressDialog {
         throw ProgressDialogException(ProgressDialogExceptionType.alreadyShown);
       }
 
+      // Check if context is still valid before showing dialog
+      if (!_context.mounted) {
+        if (_showLogs)
+          debugPrint('ProgressDialog context is no longer mounted');
+        return Future.value(false);
+      }
+
       // Show the dialog
       _dialog = _DialogBody(key: _dialogBodyKey, progressDialog: this);
-      scheduleMicrotask(() {
-        showDialog<dynamic>(
-          context: _context,
-          barrierDismissible: _barrierDismissible,
-          builder: (BuildContext buildContext) {
-            _dismissingContext = buildContext;
-            return PopScope(
-              canPop: _barrierDismissible,
-              child: Dialog(
-                backgroundColor: _backgroundColor,
-                insetAnimationCurve: _insetAnimCurve,
-                insetAnimationDuration: const Duration(milliseconds: 100),
-                elevation: _dialogElevation,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(_borderRadius),
-                  ),
+      showDialog<dynamic>(
+        context: _context,
+        barrierDismissible: _barrierDismissible,
+        builder: (BuildContext buildContext) {
+          _dismissingContext = buildContext;
+          return PopScope(
+            canPop: _barrierDismissible,
+            child: Dialog(
+              backgroundColor: _backgroundColor,
+              insetAnimationCurve: _insetAnimCurve,
+              insetAnimationDuration: const Duration(milliseconds: 100),
+              elevation: _dialogElevation,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(_borderRadius),
                 ),
-                child: Builder(builder: (_) => _dialog!),
               ),
-            );
-          },
-        );
-        _isShowing = true;
-      });
+              child: Builder(builder: (_) => _dialog!),
+            ),
+          );
+        },
+      );
+      _isShowing = true;
 
       if (_showLogs) debugPrint('ProgressDialog shown');
       return Future.value(_isShowing);
