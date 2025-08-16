@@ -5,7 +5,7 @@
 /// - Download: Shows progress percentage along with the loading message
 ///
 /// The dialog is highly customizable and supports dynamic updates while being shown.
-library progress_dialog_null_safe;
+library;
 
 import 'dart:async';
 
@@ -287,10 +287,7 @@ class ProgressDialog {
       // Schedule dialog dismissal on the next microtask to avoid
       // potential issues with the current build cycle
       scheduleMicrotask(() {
-        Navigator.of(
-          _dismissingContext,
-          rootNavigator: true,
-        ).pop();
+        Navigator.of(_dismissingContext, rootNavigator: true).pop();
         _isShowing = false;
       });
 
@@ -347,9 +344,7 @@ class ProgressDialog {
         showDialog<dynamic>(
           context: _context,
           barrierDismissible: _barrierDismissible,
-          builder: (
-            BuildContext buildContext,
-          ) {
+          builder: (BuildContext buildContext) {
             // Store context for dismissing the dialog later
             _dismissingContext = buildContext;
             return PopScope(
@@ -357,9 +352,7 @@ class ProgressDialog {
               child: Dialog(
                 backgroundColor: _backgroundColor,
                 insetAnimationCurve: _insetAnimCurve,
-                insetAnimationDuration: const Duration(
-                  milliseconds: 100,
-                ),
+                insetAnimationDuration: const Duration(milliseconds: 100),
                 elevation: _dialogElevation,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
@@ -424,17 +417,11 @@ class _DialogBodyState extends State<_DialogBody> {
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     // Create the progress indicator widget with fixed size and alignment
     final loader = Align(
       alignment: _progressWidgetAlignment,
-      child: SizedBox(
-        width: 64.0,
-        height: 64.0,
-        child: _progressWidget,
-      ),
+      child: SizedBox(width: 64.0, height: 64.0, child: _progressWidget),
     );
 
     // Create the text content widget based on dialog type
@@ -487,10 +474,7 @@ class _DialogBodyState extends State<_DialogBody> {
 
     // Return custom body if provided, otherwise use default layout
     if (_customBody != null) {
-      return Directionality(
-        textDirection: _direction,
-        child: _customBody!,
-      );
+      return Directionality(textDirection: _direction, child: _customBody!);
     } else {
       // Default dialog layout with progress indicator and text
       return Directionality(
@@ -512,7 +496,7 @@ class _DialogBodyState extends State<_DialogBody> {
                   loader,
                   const SizedBox(width: 8.0),
                   Expanded(child: text),
-                  const SizedBox(width: 8.0)
+                  const SizedBox(width: 8.0),
                 ],
               ),
             ],
@@ -528,10 +512,7 @@ class _DialogBodyState extends State<_DialogBody> {
 /// These exception types help identify specific error conditions:
 /// - [alreadyShown]: Attempted to show a dialog that is already visible
 /// - [alreadyDismissed]: Attempted to hide a dialog that is already dismissed
-enum ProgressDialogExceptionType {
-  alreadyShown,
-  alreadyDismissed,
-}
+enum ProgressDialogExceptionType { alreadyShown, alreadyDismissed }
 
 /// Extension on [ProgressDialogExceptionType] to provide human-readable error messages.
 ///
@@ -574,10 +555,7 @@ class ProgressDialogException implements Exception {
   ///
   /// [type] specifies the category of error that occurred
   /// [message] provides additional context (optional)
-  ProgressDialogException(
-    this.type, [
-    this.message,
-  ]);
+  ProgressDialogException(this.type, [this.message]);
 
   @override
   String toString() {
